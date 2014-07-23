@@ -14,8 +14,8 @@
 "balzend"|"Balz"|"courting"|"courtship"|
 "display"|"displaying"                                              return 'BEHAVIOUR'
 
+[\f\r\n]+                                                           return 'NEWLINE'
 \ +                                                                 /* skip whitespace */
-[\f\n\n]+                                                           return 'NEWLINE'
 (19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])      return 'DATE'
 ((0?[1-9])|(1[0-2]))(":"[0-5][0-9])                                 return 'TIME'
 [0-9]+("."[0-9]+)?\b                                                return 'NUMBER'
@@ -32,8 +32,8 @@
 /lex
 
 %{
-  var spIntent = "    ";
-  var headerIntent = "  ";
+  var tripCount = -1;
+  var bmd = [];
 %}
 
 %start bmd
@@ -41,92 +41,81 @@
 %% /* language grammar */
 
 bmd
-    : blocks
-        { var bmd = "[\n"+$1+"\n]"; typeof console !== 'undefined' ? console.log(bmd) : print(bmd); return bmd }
+    :
+      trips EOF
+        { console.log(bmd); }
     ;
 
-obslines
-    : obsblock -> $1+"\n"
-    | obsblocks obslines -> $1+",\n"+$2
+trips
+    :
+      trip
+    | trip trips
     ;
 
-block
-    : dateline obslines -> $1+"    \"observations\": [\n"+$2+"    ]\n"
+trip
+    :
+      tripheader tripentries
     ;
 
-blocks
-    : block -> "  {\n"+$1+"  }"
-    | blocks block -> $1+",\n  {\n"+$2+"  }"
+tripheader
+    :
+      DATE words NEWLINE
+        {
+          bmd[++tripCount] = {};
+
+          bmd[tripCount].date = $1;
+          bmd[tripCount].location = $2;
+        }
     ;
 
-lineending
-    : EOF
-    | NEWLINE
-    | NEWLINE EOF
+tripentries
+    :
+      tripentry
+        { $$ = $1; }
+    | tripentry tripentries
+        { $$ = $1 + " " + $2; }
     ;
 
-word
-    : WORD
-      { $$ = yytext; }
+tripentry
+    :
+      speciesname NEWLINE
+        { $$ = $1; }
+    | speciesname adds NEWLINE
+        { $$ = $1 + " " + $2; }
+    ;
+
+speciesname
+    :
+      words
+        { $$ = $1; }
     ;
 
 words
-    : word -> $1
-    | words word -> $1+" "+$2
+    :
+      WORD
+        { $$ = $1; }
+    | WORD words
+        { $$ = $1 + " " + $2; }
     ;
 
-date
-    : DATE
-      { $$ = yytext; }
+adds
+    :
+      add
+        { $$ = $1; }
+    | add adds
+        { $$ = $1 + " " + $2; }
     ;
 
-time
-    : TIME
-      { $$ = yytext; }
+add
+    :
+      count
+        { $$ = $1; }
     ;
 
-dateline
-    : date words lineending
-      { $$ = "    \"date\": \""+$date+"\",\n    \"location\": \""+$words+"\",\n"; }
-    | date time words lineending
-      { $$ = "    \"date\": \""+$date+"\",\n    \"time\": \""+$time+"\",\n    \"location\": \""+$words+"\",\n"; }
-    ;
-
-birdname
-    : words
-    ;
-
-behaviour
-    : BEHAVIOUR
-      { $$ = "\"behav\": \""+yytext+"\""; }
-    ;
-
-number
-    : NUMBER
-      { $$ == yytext; }
-    ;
-
-counts
-    : number
-      { $$ = "\"unsexed\": "+Number($number); }
-    | number ',' number
-      { $$ = "\"male\": "+Number($number1)+",\n        \"female\": "+Number($number2); }
-    ;
-
-specs
-    : behaviour -> "        "+$1
-    | specs behaviour -> $1+",\n        "+$2
-    | counts -> "        "+$1
-    | specs counts -> $1+",\n        "+$2
-    ;
-
-obsline
-    : birdname lineending
-      { $$ = "      {\"species\": \""+$birdname+"\"}"; }
-    | birdname specs lineending
-      { $$ = "      {\n        \"species\": \""+$birdname+"\",\n"+$specs+"\n      }"; }
-  ;
-
-obsblock
-    : obsline -> $1
+count
+    :
+      NUMBER
+        { $$ = $1; }
+    | NUMBER ',' NUMBER 
+        { $$ = $1 + "," + $3; }
     ;
