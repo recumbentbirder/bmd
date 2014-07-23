@@ -43,7 +43,7 @@
 bmd
     :
       trips EOF
-        { console.log(bmd); }
+        { console.log(bmd[0]); }
     ;
 
 trips
@@ -65,6 +65,9 @@ tripheader
 
           bmd[tripCount].date = $1;
           bmd[tripCount].location = $2;
+
+          observationCount = -1;
+          bmd[tripCount].observations = [];
         }
     ;
 
@@ -79,9 +82,15 @@ tripentries
 tripentry
     :
       speciesname NEWLINE
-        { $$ = $1; }
+        {
+          bmd[tripCount].observations[++observationCount] = {};
+          bmd[tripCount].observations[observationCount].species = $1;
+        }
     | speciesname adds NEWLINE
-        { $$ = $1 + " " + $2; }
+        {
+          bmd[tripCount].observations[++observationCount] = {};
+          bmd[tripCount].observations[observationCount].species = $1;
+        }
     ;
 
 speciesname
