@@ -32,8 +32,8 @@
 /lex
 
 %{
+  var observationCount = -1;
   var tripCount = -1;
-  var bmd = [];
 %}
 
 %start bmd
@@ -43,53 +43,60 @@
 bmd
     :
       trips EOF
-        { console.log(bmd[0]); }
+        {
+          console.log(JSON.stringify($1));
+        }
     ;
 
 trips
     :
       trip
+        {
+          $$ = [$1];
+        }
     | trip trips
+        {
+          $$ = [$1].concat($2);
+        }
     ;
 
 trip
     :
-      tripheader tripentries
+      tripheader observations
+      {
+        $$ = { trip: $1, observations: $2 };
+      }
     ;
 
 tripheader
     :
       DATE words NEWLINE
         {
-          bmd[++tripCount] = {};
-
-          bmd[tripCount].date = $1;
-          bmd[tripCount].location = $2;
-
-          observationCount = -1;
-          bmd[tripCount].observations = [];
+          $$ = { date: $1, location: $2 };
         }
     ;
 
-tripentries
+observations
     :
-      tripentry
-        { $$ = $1; }
-    | tripentry tripentries
-        { $$ = $1 + " " + $2; }
+      observation
+        {
+          $$ = [$1];
+        }
+    | observation observations
+        {
+          $$ = [$1].concat($2);
+        }
     ;
 
-tripentry
+observation
     :
       speciesname NEWLINE
         {
-          bmd[tripCount].observations[++observationCount] = {};
-          bmd[tripCount].observations[observationCount].species = $1;
+          $$ = { species: $1 };
         }
     | speciesname adds NEWLINE
         {
-          bmd[tripCount].observations[++observationCount] = {};
-          bmd[tripCount].observations[observationCount].species = $1;
+          $$ = { species: $1, adds: $2 };
         }
     ;
 
@@ -110,21 +117,31 @@ words
 adds
     :
       add
-        { $$ = $1; }
+        {
+          $$ = [$1];
+        }
     | add adds
-        { $$ = $1 + " " + $2; }
+        {
+          $$ = [$1].concat($2);
+        }
     ;
 
 add
     :
       count
-        { $$ = $1; }
+        {
+          $$ =  $1;
+        }
     ;
 
 count
     :
       NUMBER
-        { $$ = $1; }
+        {
+          $$ = { unsexed: $1 };
+        }
     | NUMBER ',' NUMBER 
-        { $$ = $1 + "," + $3; }
+        {
+          $$ = { male: $1, female: $3 };
+        }
     ;
