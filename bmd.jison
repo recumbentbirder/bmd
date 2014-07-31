@@ -14,9 +14,10 @@
 "balzend"|"Balz"|"courting"|"courtship"|
 "display"|"displaying"                                              return 'BEHAVIOUR'
 
+"ca."                                                               return 'CIRCA'
 [\f\r\n]+                                                           return 'NEWLINE'
 \ +                                                                 /* skip whitespace */
-(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])      return 'DATE'
+(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])            return 'DATE'
 ((0?[1-9])|(1[0-2]))(":"[0-5][0-9])                                 return 'TIME'
 [0-9]+("."[0-9]+)?\b                                                return 'NUMBER'
 [A-Za-z\'ßÄÖÜäöüÅåØø\/\.]+                                          return 'WORD'
@@ -73,6 +74,10 @@ tripheader
       DATE words NEWLINE
         {
           $$ = { date: $1, location: $2 };
+        }
+    | DATE TIME words NEWLINE
+        {
+          $$ = { date: $1, time: $2, location: $3 };
         }
     ;
 
@@ -143,5 +148,9 @@ count
     | NUMBER ',' NUMBER 
         {
           $$ = { male: $1, female: $3 };
+        }
+    | CIRCA NUMBER
+        {
+          $$ = { circa: $2 };
         }
     ;
