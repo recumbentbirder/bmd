@@ -5,30 +5,34 @@
 
 %options case-insensitive
 
-%%
+%x notes
 
+%%
+^"|"\s*                                                           this.begin('notes');
+<notes>[\f\r\n]                                                     this.begin('INITIAL');
+<notes>.*[^\f\r\n]                                                  return 'NOTE';
 
 "überfliegend"|"passing"|
 "rufend"|"Ruf"|"calling"|"call"|
 "singend"|"Gesang"|"singing"|"song"|
 "balzend"|"Balz"|"courting"|"courtship"|
-"display"|"displaying"                                              return 'BEHAVIOUR'
+"display"|"displaying"                                              return 'BEHAVIOUR';
 
-"ca."                                                               return 'CIRCA'
-[\f\r\n]+                                                           return 'NEWLINE'
+"ca."                                                               return 'CIRCA';
+[\f\r\n]+                                                           return 'NEWLINE';
 \ +                                                                 /* skip whitespace */
-(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])            return 'DATE'
-([0-1]?[0-9]|2[0-3])\:[0-5][0-9]                                     return 'TIME'
-[0-9]+("."[0-9]+)?\b                                                return 'NUMBER'
-[A-Za-z\'ßÄÖÜäöüÅåØø\/\.]+                                          return 'WORD'
-\?                                                                  return '?'
-\!                                                                  return '!'
-\,                                                                  return ','
-\-                                                                  return '-'
-\:                                                                  return ':'
-\|                                                                  return '|'
-<<EOF>>                                                             return 'EOF'
-.                                                                   return 'INVALID'
+(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])            return 'DATE';
+([0-1]?[0-9]|2[0-3])\:[0-5][0-9]                                     return 'TIME';
+[0-9]+("."[0-9]+)?\b                                                return 'NUMBER';
+[A-Za-z\'ßÄÖÜäöüÅåØø\/\.]+                                          return 'WORD';
+\?                                                                  return '?';
+\!                                                                  return '!';
+\,                                                                  return ',';
+\-                                                                  return '-';
+\:                                                                  return ':';
+\|                                                                  return '|';
+<<EOF>>                                                             return 'EOF';
+.                                                                   return 'INVALID';
 
 /lex
 
@@ -106,6 +110,35 @@ observation
     | speciesname adds NEWLINE
         {
           $$ = { species: $1, adds: $2 };
+        }
+    | speciesname NEWLINE notes
+        {
+          $$ = { species: $1, notes: $3};
+        }
+    | speciesname adds NEWLINE notes
+        {
+          $$ = { species: $1, adds: $2, notes: $4 };
+        }
+    ;
+
+notes
+    :
+      note
+        {
+          $$ = $1;
+        }
+    |
+      note notes
+        {
+          $$ = $1 + " " + $2;
+        }
+    ;
+
+note
+    :
+      NOTE
+        {
+          $$ = yytext;
         }
     ;
 
