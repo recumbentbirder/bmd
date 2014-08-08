@@ -31,6 +31,7 @@
 \-                                                                  return '-';
 \:                                                                  return ':';
 \|                                                                  return '|';
+\=                                                                  return '=';
 <<EOF>>                                                             return 'EOF';
 .                                                                   return 'INVALID';
 
@@ -71,6 +72,13 @@ trip
       {
         $$ = { trip: $1, observations: $2 };
       }
+    |
+      tripheader observers observations
+      {
+        var trip = $1;
+        trip.observers = $2;
+        $$ = { trip: trip, observations: $3 };
+      }
     ;
 
 tripheader
@@ -86,6 +94,27 @@ tripheader
     | DATE TIME '-' TIME words NEWLINE
         {
           $$ = { date: $1, time: $2, endtime: $4, location: $5 };
+        }
+    ;
+
+observers
+    :
+      '=' commaSeparatedString NEWLINE
+        {
+          $$ = $2.split(',');
+        }
+    ;
+
+commaSeparatedString
+    :
+      words
+        {
+          $$ = $1;
+        }
+    |
+      words ',' commaSeparatedString
+        {
+          $$ = $1 + "," + $3;
         }
     ;
 
