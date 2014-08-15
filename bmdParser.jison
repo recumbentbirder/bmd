@@ -50,7 +50,7 @@ bmd
     :
       trips EOF
         {
-          console.log(JSON.stringify($1));
+          return($1);
         }
     ;
 
