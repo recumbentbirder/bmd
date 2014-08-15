@@ -1,0 +1,33 @@
+#!/usr/bin/env nodejs
+
+var fs = require('fs');
+var parser = require('./bmdParser').parser;
+
+function bmdToJSON(bmdString) {
+  return parser.parse(bmdString);
+}
+
+Array.prototype.unique = function()
+{
+  var tmp = {};
+  for(var i = 0, n = this.length; i < n; ++i)
+  {
+    tmp[this[i]] = true;
+  }
+  return Object.keys(tmp);
+}
+
+if (process.argv.length > 2 ) {
+
+  var bmdFileName, bmdString = '';
+
+  for (var i=0; i < (process.argv.length-2); i++) {
+    bmdFileName = process.argv[i+2];
+
+    bmdString += fs.readFileSync(bmdFileName, 'utf8');
+  }
+
+  var bmdJSON = bmdToJSON(bmdString);
+
+  console.log(JSON.stringify(bmdJSON));
+}
