@@ -25,8 +25,8 @@ bmd consists of several small programs, specialized to do their task at hand as 
 
 | command ||
 |----------||
-| bmd2json | Transcribes a bmd input file into a json string on standard output. The resulting string can be used as input for a NoSQL database or queries directly with JSON tools like *jq*.
-| bmdQuery | Runs several predifined queries on the JSON output of bmd2json, like for year list, life list, species count etc.
+| bmd2json | Transcribes a bmd input file into a json string on standard output. The resulting string can be used as input for a NoSQL database or queries directly with JSON tools like *jq*.|
+| bmdQuery | Runs several predifined queries on the JSON output of bmd2json, like for year list, life list, species count etc.|
 
 ### Installation
 
