@@ -1,6 +1,0 @@
-#!/bin/bash
-wget http://webix.com/download-webix-gpl/?download
-mv index.html\?download webix/webix.zip
-cd webix
-unzip -f webix.zip
-cd ..
