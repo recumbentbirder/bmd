@@ -85,15 +85,15 @@ tripheader
     :
       DATE words NEWLINE
         {
-          $$ = { date: $1, location: $2 };
+          $$ = { line: @1.first_line, date: $1, location: $2 };
         }
     | DATE TIME words NEWLINE
         {
-          $$ = { date: $1, time: $2, location: $3 };
+          $$ = { line: @1.first_line, date: $1, time: $2, location: $3 };
         }
     | DATE TIME '-' TIME words NEWLINE
         {
-          $$ = { date: $1, time: $2, endtime: $4, location: $5 };
+          $$ = { line: @1.first_line, date: $1, time: $2, endtime: $4, location: $5 };
         }
     ;
 
@@ -134,19 +134,19 @@ observation
     :
       speciesname NEWLINE
         {
-          $$ = { species: $1 };
+          $$ = { line: @1.first_line, species: $1 };
         }
     | speciesname adds NEWLINE
         {
-          $$ = { species: $1, adds: $2 };
+          $$ = { line: @1.first_line, species: $1, adds: $2 };
         }
     | speciesname NEWLINE notes
         {
-          $$ = { species: $1, notes: $3};
+          $$ = { line: @1.first_line, species: $1, notes: $3};
         }
     | speciesname adds NEWLINE notes
         {
-          $$ = { species: $1, adds: $2, notes: $4 };
+          $$ = { line: @1.first_line, species: $1, adds: $2, notes: $4 };
         }
     ;
 
