@@ -23,6 +23,63 @@ With bmd, I enter observations just as I do in by paper notebook: In the first l
 
 bmd files are easy to write and read for humans, and are easy to parse for computers. Actually, the bmd parser creates JSON as its output from a .bmd file, a kind of database of the obsrevations. This output can subsequently be used by other tools to generate lists, counts, maps, …
 
+### Example
+
+The following bmd:
+
+```
+2016-04-01 9:00 Hökälla
+= Christoph Lange, Margrit Krüger
+Mute Swan 2,2
+Song Thrush 1
+Robin
+| unusual colour!
+```
+will result in the following JSON:
+
+```json
+[
+  {
+    "trip": {
+      "line": 1,
+      "date": "2016-04-01",
+      "time": "9:00",
+      "location": "Hökälla",
+      "observers": [
+        "Christoph Lange",
+        "Margrit Krüger"
+      ]
+    },
+    "observations": [
+      {
+        "line": 3,
+        "species": "Mute Swan",
+        "adds": [
+          {
+            "male": "2",
+            "female": "2"
+          }
+        ]
+      },
+      {
+        "line": 4,
+        "species": "Song Thrush",
+        "adds": [
+          {
+            "unsexed": "1"
+          }
+        ]
+      },
+      {
+        "line": 5,
+        "species": "Robin",
+        "notes": "unusual colour!"
+      }
+    ]
+  }
+]
+```
+
 ## The Software
 
 ### Concept
