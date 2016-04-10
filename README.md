@@ -38,18 +38,16 @@ Robin
 will result in the following JSON:
 
 ```json
-[
-  {
-    "trip": {
-      "line": 1,
-      "date": "2016-04-01",
-      "time": "9:00",
-      "location": "Hökälla",
-      "observers": [
-        "Christoph Lange",
-        "Margrit Krüger"
-      ]
-    },
+{
+  "trip": {
+    "line": 1,
+    "date": "2016-04-01",
+    "time": "9:00",
+    "location": "Hökälla",
+    "observers": [
+      "Christoph Lange",
+      "Margrit Krüger"
+    ],
     "observations": [
       {
         "line": 3,
@@ -77,7 +75,7 @@ will result in the following JSON:
       }
     ]
   }
-]
+}
 ```
 
 ## The Software
@@ -106,6 +104,6 @@ At the moment, you have to have 'node' installed and 'jison'. Jison can be insta
 Will write a JSON representation of the observation data from the .bmd file.
 
 ```sh
-./bmd2json test.bmd | jq '[.[].trip]'
+./bmd2json test.bmd | jq '[.[].trip.location]'
 ```
-Filters the JSON output and returns an array of all trips from the .bmd file, using the third party tool *jq*.
+Filters the JSON output and returns an array of all trips' locations from the .bmd file, using the third party tool *jq*.
