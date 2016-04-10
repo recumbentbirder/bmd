@@ -12,12 +12,6 @@
 <notes>[\f\r\n]                                                     this.begin('INITIAL');
 <notes>.*[^\f\r\n]                                                  return 'NOTE';
 
-"überfliegend"|"passing"|
-"rufend"|"Ruf"|"calling"|"call"|
-"singend"|"Gesang"|"singing"|"song"|
-"balzend"|"Balz"|"courting"|"courtship"|
-"display"|"displaying"                                              return 'BEHAVIOUR';
-
 "ca."                                                               return 'CIRCA';
 [\f\r\n]+                                                           return 'NEWLINE';
 \ +                                                                 /* skip whitespace */
