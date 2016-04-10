@@ -52,7 +52,7 @@ trips
     :
       trip
         {
-          $$ = [$1];
+          $$ = $1;
         }
     | trip trips
         {
@@ -64,14 +64,17 @@ trip
     :
       tripheader observations
       {
-        $$ = { trip: $1, observations: $2 };
+        var trip = $1;
+        trip.observations = $2;
+        $$ = { trip: trip };
       }
     |
       tripheader observers observations
       {
         var trip = $1;
         trip.observers = $2;
-        $$ = { trip: trip, observations: $3 };
+        trip.observations = $3;
+        $$ = { trip: trip };
       }
     ;
 
